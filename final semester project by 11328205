@@ -1,0 +1,62 @@
+# 井字遊戲（Tic-Tac-Toe）完整程式碼
+
+def display_board(board):
+    """顯示遊戲棋盤"""
+    for row in range(3):
+        print(f"{board[row*3]} | {board[row*3+1]} | {board[row*3+2]}")
+        if row < 2:
+            print("--+---+--")
+
+def player_input(board, player_symbol):
+    """處理玩家輸入"""
+    while True:
+        try:
+            move = int(input(f"玩家 {player_symbol}，選擇格子 (1-9): ")) - 1
+            if 0 <= move < 9 and board[move] == " ":
+                board[move] = player_symbol
+                break
+            else:
+                print("無效輸入，該位置已被佔據或超出範圍。請重新選擇。")
+        except ValueError:
+            print("請輸入有效的數字！")
+
+def check_winner(board, player_symbol):
+    """檢查是否有玩家勝利"""
+    winning_combinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # 行
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # 列
+        [0, 4, 8], [2, 4, 6]             # 對角線
+    ]
+    for combo in winning_combinations:
+        if all(board[pos] == player_symbol for pos in combo):
+            return True
+    return False
+
+def play_game():
+    """遊戲主邏輯"""
+    board = [" " for _ in range(9)]
+    current_player = "X"
+
+    while " " in board:
+        display_board(board)
+        player_input(board, current_player)
+
+        if check_winner(board, current_player):
+            display_board(board)
+            print(f"玩家 {current_player} 獲勝！")
+            return
+
+        # 切換玩家
+        current_player = "O" if current_player == "X" else "X"
+
+    display_board(board)
+    print("平局！")
+
+if __name__ == "__main__":
+    while True:
+        print("歡迎來到井字遊戲！")
+        play_game()
+        replay = input("是否要再玩一局？(y/n): ").lower()
+        if replay != 'y':
+            print("感謝遊玩，再見！")
+            break
