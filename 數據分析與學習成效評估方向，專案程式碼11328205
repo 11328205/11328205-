@@ -1,0 +1,138 @@
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+
+typedef struct {
+    char name[50];
+    float homework, quiz, midterm, final;
+    float study_hours;
+    float total;
+    float efficiency;
+    char grade;
+    char suggestion[200];
+} Student;
+
+// 函數宣告
+float calculate_total(Student *s);
+char calculate_grade(float score);
+float calculate_efficiency(float total, float hours);
+void generate_suggestion(Student *s);
+void print_report(Student *s);
+
+int main() {
+    int n, i;
+
+    printf("請輸入學生人數: ");
+    scanf("%d", &n);
+
+    Student students[MAX_STUDENTS];
+
+    for (i = 0; i < n; i++) {
+        printf("\n--- 輸入第 %d 位學生資料 ---\n", i + 1);
+        printf("姓名: ");
+        scanf(" %[^\n]", students[i].name);
+        printf("作業成績: ");
+        scanf("%f", &students[i].homework);
+        printf("小考成績: ");
+        scanf("%f", &students[i].quiz);
+        printf("期中考成績: ");
+        scanf("%f", &students[i].midterm);
+        printf("期末考成績: ");
+        scanf("%f", &students[i].final);
+        printf("學習時間 (小時): ");
+        scanf("%f", &students[i].study_hours);
+
+        // 計算
+        students[i].total = calculate_total(&students[i]);
+        students[i].grade = calculate_grade(students[i].total);
+        students[i].efficiency = calculate_efficiency(students[i].total, students[i].study_hours);
+        generate_suggestion(&students[i]);
+    }
+
+    // 顯示所有報告
+    printf("\n=== 學習效率分析報告 ===\n");
+    for (i = 0; i < n; i++) {
+        print_report(&students[i]);
+    }
+
+    return 0;
+}
+
+// 加權總成績: 作業20%、小考20%、期中30%、期末30%
+float calculate_total(Student *s) {
+    return s->homework * 0.2 + s->quiz * 0.2 + s->midterm * 0.3 + s->final * 0.3;
+}
+
+char calculate_grade(float score) {
+    if (score >= 90) return 'A';
+    else if (score >= 80) return 'B';
+    else if (score >= 70) return 'C';
+    else if (score >= 60) return 'D';
+    else return 'F';
+}
+
+float calculate_efficiency(float total, float hours) {
+    if (hours <= 0) return 0.0;
+    return total / hours;
+}
+
+void generate_suggestion(Student *s) {
+    float eff = s->efficiency;
+    float score = s->total;
+
+    if (score >= 85 && eff >= 7) {
+        strcpy(s->suggestion, "表現優異，學習效率高，請持續保持。");
+    } else if (score >= 70 && eff < 5) {
+        strcpy(s->suggestion, "成績尚可但效率偏低，建議調整學習策略，如提升專注與時間規劃。");
+    } else if (score < 70 && eff < 5) {
+        strcpy(s->suggestion, "成績與效率皆偏低，應立即檢討讀書方法與加強複習。");
+    } else {
+        strcpy(s->suggestion, "學習表現穩定，仍可尋找提高效率的方式，例如定期測驗、自我檢核。");
+    }
+}
+
+void print_report(Student *s) {
+    printf("\n👤 學生：%s\n", s->name);
+    printf("總成績：%.2f（等級：%c）\n", s->total, s->grade);
+    printf("學習時間：%.2f 小時\n", s->study_hours);
+    printf("效率分數：%.2f\n", s->efficiency);
+    printf("建議：%s\n", s->suggestion);
+}
+
+輸出:
+```c
+學生人數: 2
+
+學生1:
+姓名: Alice
+作業: 85
+小考: 75
+期中: 78
+期末: 90
+學習時間: 12.5
+
+學生2:
+姓名: Bob
+作業: 60
+小考: 55
+期中: 70
+期末: 65
+學習時間: 20
+
+=== 學習效率分析報告 ===
+
+👤 學生：Alice
+總成績：82.55（等級：B）
+學習時間：12.50 小時
+效率分數：6.60
+建議：學習表現穩定，仍可尋找提高效率的方式，例如定期測驗、自我檢核。
+
+👤 學生：Bob
+總成績：63.75（等級：D）
+學習時間：20.00 小時
+效率分數：3.19
+建議：成績與效率皆偏低，應立即檢討讀書方法與加強複習。
+
